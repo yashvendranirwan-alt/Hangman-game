@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hangman Game</title>
+
+<style>
+body{
+  background:#0a0a0f;
+  color:#fff;
+  font-family:monospace;
+  text-align:center;
+}
+#word{
+  font-size:30px;
+  letter-spacing:10px;
+}
+button{
+  margin:4px;
+  padding:10px;
+  cursor:pointer;
+}
+.correct{background:green;color:white;}
+.wrong{background:red;color:white;}
+</style>
+
+</head>
+<body>
+
+<h1>HANGMAN</h1>
+
+<div id="word"></div>
+<p id="hint"></p>
+<p id="status"></p>
+<p id="wrong">Wrong: 0/6</p>
+
+<div id="keyboard"></div>
+<button onclick="startGame()">New Game</button>
+
+<script>
+
+// WORD BANK
+const words = [
+  {word:"january",hint:"First month"},
+  {word:"february",hint:"Shortest month"},
+  {word:"march",hint:"Spring starts"},
+  {word:"april",hint:"Fools day"},
+  {word:"may",hint:"5th month"},
+  {word:"june",hint:"Summer"},
+  {word:"july",hint:"Caesar"},
+  {word:"august",hint:"Emperor"},
+  {word:"september",hint:"School"},
+  {word:"october",hint:"Halloween"},
+  {word:"november",hint:"9 latin"},
+  {word:"december",hint:"Christmas"}
+];
+
+let currentWord="";
+let guessed=[];
+let wrong=0;
+let maxWrong=6;
+
+// START GAME
+function startGame(){
+  let random=words[Math.floor(Math.random()*words.length)];
+  currentWord=random.word;
+  guessed=[];
+  wrong=0;
+
+  document.getElementById("hint").textContent="Hint: "+random.hint;
+  document.getElementById("status").textContent="";
+  
+  createKeyboard();
+  updateWord();
+}
+
+// UPDATE WORD
+function updateWord(){
+  let display="";
+  for(let letter of currentWord){
+    if(guessed.includes(letter)){
+      display+=letter+" ";
+    }else{
+      display+="_ ";
+    }
+  }
+  document.getElementById("word").textContent=display;
+
+  if(!display.includes("_")){
+    document.getElementById("status").textContent="YOU WIN 🎉";
+  }
+}
+
+// KEYBOARD
+function createKeyboard(){
+  let keys="abcdefghijklmnopqrstuvwxyz";
+  let keyboard=document.getElementById("keyboard");
+  keyboard.innerHTML="";
+
+  for(let k of keys){
+    let btn=document.createElement("button");
+    btn.textContent=k;
+    btn.onclick=()=>guess(k,btn);
+    keyboard.appendChild(btn);
+  }
+}
+
+// GUESS
+function guess(letter,btn){
+  btn.disabled=true;
+
+  if(currentWord.includes(letter)){
+    guessed.push(letter);
+    btn.classList.add("correct");
+  }else{
+    wrong++;
+    btn.classList.add("wrong");
+  }
+
+  document.getElementById("wrong").textContent="Wrong: "+wrong+"/6";
+
+  if(wrong>=maxWrong){
+    document.getElementById("status").textContent="YOU LOSE 😢 Word: "+currentWord;
+  }
+
+  updateWord();
+}
+
+// INIT
+startGame();
+
+</script>
+
+</body>
+</html>
